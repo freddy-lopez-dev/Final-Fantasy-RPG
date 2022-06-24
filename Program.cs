@@ -1,19 +1,23 @@
-﻿//Let the game begin
-Console.WriteLine(WeaponList.MorningStar.Name);
+﻿//Play D&D
+Game dungeonsDragons = new Game();
+dungeonsDragons.Start();
 
 class Hero
 {
     public string Name { get; set; }
-    public int BaseStrength { get; set; } = 5;
-    public int BaseDefence { get; set; } = 5;
+    public int BaseStrength { get; set; } = 20;
+    public int BaseDefence { get; set; } = 20;
     public int OriginalHealth { get; set; } = 100;
-    public int CurrentHealth { get; set; }
+    public int CurrentHealth { get; set; } = 100;
     public Weapon EquippedWeapon { get; set; }
     public Armor EquippedArmor { get; set; }
 
-    public Hero(string name)
+    public Hero()
     {
-        Name = name;
+        Console.WriteLine("Welcome to Final Fantasy");
+        Console.WriteLine("Enter your name:");
+        Name = Console.ReadLine();
+        Console.Clear();
     }
 
     public void ShowStats()
@@ -33,14 +37,19 @@ class Hero
         return inventory;
     }
 
-    //public Weapon EquippedWeapon()
-    //public Armor EquippedArmor()
-    
-}
+    public Weapon EquipWeapon(Weapon weapon)
+    {
+        return EquippedWeapon = weapon;
+    }
+    public Armor EquipArmor(Armor armor)
+    {
+        return EquippedArmor = armor;
+    }
 
+}
 class Weapon
 {
-    public string Name { get; set;}
+    public string Name { get; set; }
     public int Power { get; set; }
 
     public Weapon(string name, int power)
@@ -49,7 +58,6 @@ class Weapon
         Power = power;
     }
 }
-
 class Armor
 {
     public string Name { get; set; }
@@ -61,16 +69,30 @@ class Armor
         Power = power;
     }
 }
-
 class Monster
 {
-    public string Name { get; set;}
+    public string Name { get; set; }
     public int Strength { get; set; }
     public int Defense { get; set; }
     public int OriginalHealth { get; set; } = 100;
-    public int CurrentHealth { get; set; }
-}
+    public int CurrentHealth { get; set; } = 100;
 
+    public Monster(string name, int strength, int defense)
+    {
+        Name = name;
+        Strength = strength;
+        Defense = defense;
+    }
+}
+static class MonsterList
+{
+    public static Monster Vecna = new Monster("Vecna", 20, 10);
+    public static Monster Demogorgon = new Monster("Demogorgon", 15, 8);
+    public static Monster Spider = new Monster("Spider", 10, 6);
+    public static Monster MindFlayer = new Monster("Mind Flayer", 5, 4);
+    public static Monster DemoDogs = new Monster("Demo Dogs", 3, 2);
+    public static List<Monster> Monsters = new List<Monster>() { Vecna, DemoDogs, Demogorgon, Spider, MindFlayer };
+}
 static class WeaponList
 {
     public static Weapon Dagger = new Weapon("Dagger", 4);
@@ -78,6 +100,8 @@ static class WeaponList
     public static Weapon Crossbow = new Weapon("Crossbow", 8);
     public static Weapon MorningStar = new Weapon("Morningstar", 8);
     public static Weapon QuarterStaff = new Weapon("Quarter Staff", 6);
+    public static List<Weapon> Weapons = new List<Weapon>() { Dagger, Lance, Crossbow, MorningStar, QuarterStaff };
+
 }
 
 static class ArmorList
@@ -87,4 +111,161 @@ static class ArmorList
     public static Armor ChainMail = new Armor("Chain Mail", 16);
     public static Armor HalfPlate = new Armor("Half Plate", 15);
     public static Armor Plate = new Armor("Plate", 18);
+    public static List<Armor> Armors = new List<Armor>() { Padded, ScaleMail, ChainMail, HalfPlate, Plate };
+}
+
+class Statistics
+{
+    public int GamesPlayed { get; set; } = 0;
+    public int FightsWon { get; set; } = 0;
+    public int FightsLost { get; set; } = 0;
+}
+class Inventory
+{
+    public ICollection<Weapon> Weapons { get; set; }
+    public ICollection<Armor> Armors { get; set; }
+
+    public Inventory()
+    {
+        Weapons = WeaponList.Weapons;
+        Armors = ArmorList.Armors;
+    }
+
+    public void ShowInventory()
+    {
+        int weaponCounter = 0;
+        int armorCounter = 0;
+        Console.WriteLine("----------------------------------");
+        Console.WriteLine("Weapon Inventory");
+        foreach (Weapon weapon in Weapons)
+        {
+            Console.WriteLine($"[{weaponCounter++}] {weapon.Name} || Power: {weapon.Power}");
+        }
+        Console.WriteLine("----------------------------------");
+        Console.WriteLine("Armor Inventory");
+        foreach (Armor armor in Armors)
+        {
+            Console.WriteLine($"[{armorCounter++}] {armor.Name} || Power: {armor.Power}");
+        }
+        Console.WriteLine("----------------------------------");
+    }
+
+    public void ChangeEquipment(Hero hero)
+    {
+        Console.WriteLine("Choose a Weapon from 0-4");
+        int weaponNum = Int32.Parse(Console.ReadLine());
+        Console.WriteLine("Choose an Armor from 0-4");
+        int armorNum = Int32.Parse(Console.ReadLine());
+
+        hero.EquipWeapon(Weapons.ElementAt(weaponNum));
+        hero.EquipArmor(Armors.ElementAt(armorNum));
+        Console.Clear();
+        Console.WriteLine($"Your New Weapon is: {hero.EquippedWeapon.Name}");
+        Console.WriteLine($"Your New Armor is: {hero.EquippedArmor.Name}");
+    }
+}
+
+static class MainMenu
+{
+    public static void ShowMenu()
+    {
+        Console.WriteLine("Main Menu");
+        Console.WriteLine("[A] Statistics");
+        Console.WriteLine("[B] Inventory");
+        Console.WriteLine("[C] Fight");
+    }
+
+    public static char SelectMenu()
+    {
+        char selectedMenu = char.Parse(Console.ReadLine());
+        while (selectedMenu != 'A' && selectedMenu != 'B' && selectedMenu != 'C')
+        {
+            Console.WriteLine("Select correct Option");
+            selectedMenu = char.Parse(Console.ReadLine());
+        }
+        Console.Clear();
+        return selectedMenu;
+    }
+
+}
+
+class Game
+{
+    public Statistics GameStatistics = new Statistics();
+    public Inventory GameInventory = new Inventory();
+    public List<Monster> GameMonsters = MonsterList.Monsters;
+    public Hero CurrentPlayer = new Hero();
+
+    public void Start()
+    {
+        MainMenu.ShowMenu();
+        char userSelection = MainMenu.SelectMenu();
+        switch (userSelection)
+        {
+            case 'A':
+                Console.WriteLine($"Game Statistics: Games Played:{GameStatistics.GamesPlayed} Fights Won: {GameStatistics.FightsWon} Fights Loss: {GameStatistics.FightsLost}");
+                Start();
+                break;
+
+            case 'B':
+                //display Game Inventory
+                //Inventory class
+                Console.WriteLine("Displaying Inventory...");
+                GameInventory.ShowInventory();
+                Console.WriteLine($"Your Stats");
+                Console.WriteLine($"Hero Name: {CurrentPlayer.Name}");
+                CurrentPlayer.ShowStats();
+                CurrentPlayer.ShowInventory();
+                //change equipment
+                Console.WriteLine("Do you want to change your equipment? Y/N");
+                char doEquipmentChange = char.Parse(Console.ReadLine());
+                if (doEquipmentChange == 'Y')
+                {
+                    GameInventory.ChangeEquipment(CurrentPlayer);
+                }
+                Start();
+                break;
+            case 'C':
+                //Fight class
+                Fight fight = new Fight();
+
+                break;
+        }
+
+    }
+}
+
+class Fight
+{
+    public void HeroTurn(Hero hero, Monster monster)
+    {
+        int heroDamage = hero.BaseStrength + hero.EquippedWeapon.Power;
+        monster.CurrentHealth = monster.OriginalHealth - heroDamage;
+    }
+
+    public void MonsterTurn(Hero hero, Monster monster)
+    {
+        int monsterDamage = monster.Strength - (hero.BaseDefence + hero.EquippedArmor.Power);
+        hero.CurrentHealth = hero.OriginalHealth - monsterDamage;
+    }
+
+    public void Win(Monster monster, Statistics stats)
+    {
+        if (monster.CurrentHealth < 0)
+        {
+            //Remove from monster list
+
+
+            //WinCounter++
+            stats.FightsWon++;
+        }
+    }
+
+    public void Lose(Hero hero)
+    {
+        if (hero.CurrentHealth < 0)
+        {
+            //LoseCounter++
+        }
+    }
 }
