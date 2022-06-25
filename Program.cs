@@ -22,19 +22,23 @@ class Hero
 
     public void ShowStats()
     {
+        Console.WriteLine($"Your Stats");
+        Console.WriteLine("----------------------------------");
         Console.WriteLine($"Player Name: {Name}");
         Console.WriteLine($"Player Strenght: {BaseStrength}");
         Console.WriteLine($"Player Defence: {BaseDefence}");
         Console.WriteLine($"Player Health: {CurrentHealth}/{OriginalHealth}");
     }
 
-    public Dictionary<Weapon, Armor> ShowInventory()
+    public void ShowInventory()
     {
         Weapon playerWeapon = EquippedWeapon;
         Armor playerArmor = EquippedArmor;
-        Dictionary<Weapon, Armor> inventory = new Dictionary<Weapon, Armor>();
-        inventory.Add(playerWeapon, playerArmor);
-        return inventory;
+        Console.WriteLine("----------------------------------");
+        Console.WriteLine("Your Inventory");
+        Console.WriteLine($"Your Weapon is {(playerWeapon == null ? "Empty": playerWeapon.Name)}");
+        Console.WriteLine($"Your Armor is {(playerArmor == null ? "Empty" : playerArmor.Name)}");
+        Console.WriteLine("----------------------------------");
     }
 
     public Weapon EquipWeapon(Weapon weapon)
@@ -86,12 +90,12 @@ class Monster
 }
 static class MonsterList
 {
-    public static Monster Vecna = new Monster("Vecna", 20, 10);
-    public static Monster Demogorgon = new Monster("Demogorgon", 15, 8);
-    public static Monster Spider = new Monster("Spider", 10, 6);
-    public static Monster MindFlayer = new Monster("Mind Flayer", 5, 4);
-    public static Monster DemoDogs = new Monster("Demo Dogs", 3, 2);
-    public static List<Monster> Monsters = new List<Monster>() { Vecna, DemoDogs, Demogorgon, Spider, MindFlayer };
+    public static Monster Bahamuts = new Monster("Bahamuts", 20, 10);
+    public static Monster Zeromus = new Monster("Zeromus", 15, 8);
+    public static Monster Emperor = new Monster("Emperor", 10, 6);
+    public static Monster Necron = new Monster("Necron", 5, 4);
+    public static Monster Shuyin = new Monster("Shuyin", 3, 2);
+    public static List<Monster> Monsters = new List<Monster>() { Bahamuts, Shuyin, Zeromus, Emperor, Necron };
 }
 static class WeaponList
 {
@@ -154,14 +158,20 @@ class Inventory
     {
         Console.WriteLine("Choose a Weapon from 0-4");
         int weaponNum = Int32.Parse(Console.ReadLine());
+        Console.WriteLine($"Weapon {Weapons.ElementAt(weaponNum).Name} equipped!");
         Console.WriteLine("Choose an Armor from 0-4");
         int armorNum = Int32.Parse(Console.ReadLine());
+        Console.WriteLine($"Armor {Armors.ElementAt(armorNum).Name} equipped");
 
         hero.EquipWeapon(Weapons.ElementAt(weaponNum));
         hero.EquipArmor(Armors.ElementAt(armorNum));
         Console.Clear();
         Console.WriteLine($"Your New Weapon is: {hero.EquippedWeapon.Name}");
         Console.WriteLine($"Your New Armor is: {hero.EquippedArmor.Name}");
+        Console.WriteLine("----------------------------------");
+        hero.ShowStats();
+        hero.ShowInventory();
+
     }
 }
 
@@ -204,6 +214,8 @@ class Game
         {
             case 'A':
                 Console.WriteLine($"Game Statistics: Games Played:{GameStatistics.GamesPlayed} Fights Won: {GameStatistics.FightsWon} Fights Loss: {GameStatistics.FightsLost}");
+                CurrentPlayer.ShowStats();
+                CurrentPlayer.ShowInventory();
                 Start();
                 break;
 
@@ -212,13 +224,13 @@ class Game
                 //Inventory class
                 Console.WriteLine("Displaying Inventory...");
                 GameInventory.ShowInventory();
-                Console.WriteLine($"Your Stats");
-                Console.WriteLine($"Hero Name: {CurrentPlayer.Name}");
+                
                 CurrentPlayer.ShowStats();
                 CurrentPlayer.ShowInventory();
                 //change equipment
                 Console.WriteLine("Do you want to change your equipment? Y/N");
                 char doEquipmentChange = char.Parse(Console.ReadLine());
+                Console.WriteLine("----------------------------------");
                 if (doEquipmentChange == 'Y')
                 {
                     GameInventory.ChangeEquipment(CurrentPlayer);
@@ -227,8 +239,21 @@ class Game
                 break;
             case 'C':
                 //Fight class
-                Fight fight = new Fight();
+                Random randomNum = new Random();
+                Monster randomMonster = GameMonsters.ElementAt(randomNum.Next(GameMonsters.Count));
+                Fight fight = new Fight(CurrentPlayer, randomMonster);
+                Console.WriteLine("Monster Encountered!");
+                Console.WriteLine($"{randomMonster.Name} || Health: {randomMonster.CurrentHealth}/{randomMonster.OriginalHealth} || Strength: {randomMonster.Strength} || Defense: {randomMonster.Defense}");
+                while(CurrentPlayer.CurrentHealth > 0 && randomMonster.CurrentHealth > 0)
+                {
+                    Console.WriteLine($"{randomMonster.Name} || Health: {randomMonster.CurrentHealth}/{randomMonster.OriginalHealth}");
+                    Console.WriteLine($"{CurrentPlayer.Name} || Health: {CurrentPlayer.CurrentHealth}/{CurrentPlayer.OriginalHealth}");
+                    fight.HeroTurn(CurrentPlayer, randomMonster);
+                    fight.MonsterTurn(CurrentPlayer, randomMonster);
+                }
+                {
 
+                }
                 break;
         }
 
@@ -237,16 +262,32 @@ class Game
 
 class Fight
 {
+    public Hero Hero { get; set; }
+    public Monster Monster { get; set; }
+    public Fight(Hero hero, Monster monster)
+    {
+        Hero = hero;
+        Monster = monster;
+    }
+
     public void HeroTurn(Hero hero, Monster monster)
     {
+        //try catch here
         int heroDamage = hero.BaseStrength + hero.EquippedWeapon.Power;
-        monster.CurrentHealth = monster.OriginalHealth - heroDamage;
+        monster.CurrentHealth -= heroDamage;
     }
 
     public void MonsterTurn(Hero hero, Monster monster)
     {
+        //try catch here
         int monsterDamage = monster.Strength - (hero.BaseDefence + hero.EquippedArmor.Power);
-        hero.CurrentHealth = hero.OriginalHealth - monsterDamage;
+        if(monsterDamage < 0)
+        {
+            Console.WriteLine("No Damage!");
+        } else
+        {
+            hero.CurrentHealth -= monsterDamage;
+        }
     }
 
     public void Win(Monster monster, Statistics stats)
