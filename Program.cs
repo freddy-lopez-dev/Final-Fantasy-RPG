@@ -90,11 +90,11 @@ class Monster
 }
 static class MonsterList
 {
-    public static Monster Bahamuts = new Monster("Bahamuts", 20, 10);
-    public static Monster Zeromus = new Monster("Zeromus", 15, 8);
-    public static Monster Emperor = new Monster("Emperor", 10, 6);
-    public static Monster Necron = new Monster("Necron", 5, 4);
-    public static Monster Shuyin = new Monster("Shuyin", 3, 2);
+    public static Monster Bahamuts = new Monster("Bahamuts", 40, 10);
+    public static Monster Zeromus = new Monster("Zeromus", 30, 8);
+    public static Monster Emperor = new Monster("Emperor", 50, 6);
+    public static Monster Necron = new Monster("Necron", 20, 4);
+    public static Monster Shuyin = new Monster("Shuyin", 10, 2);
     public static List<Monster> Monsters = new List<Monster>() { Bahamuts, Shuyin, Zeromus, Emperor, Necron };
 }
 static class WeaponList
@@ -246,14 +246,15 @@ class Game
                 Console.WriteLine($"{randomMonster.Name} || Health: {randomMonster.CurrentHealth}/{randomMonster.OriginalHealth} || Strength: {randomMonster.Strength} || Defense: {randomMonster.Defense}");
                 while(CurrentPlayer.CurrentHealth > 0 && randomMonster.CurrentHealth > 0)
                 {
+                    Console.WriteLine("----------------------------------");
                     Console.WriteLine($"{randomMonster.Name} || Health: {randomMonster.CurrentHealth}/{randomMonster.OriginalHealth}");
-                    Console.WriteLine($"{CurrentPlayer.Name} || Health: {CurrentPlayer.CurrentHealth}/{CurrentPlayer.OriginalHealth}");
+                    Console.WriteLine($"Hero: {CurrentPlayer.Name} || Health: {CurrentPlayer.CurrentHealth}/{CurrentPlayer.OriginalHealth}");
                     fight.HeroTurn(CurrentPlayer, randomMonster);
                     fight.MonsterTurn(CurrentPlayer, randomMonster);
+                    fight.Win(randomMonster, GameStatistics);
+                    fight.Lose(CurrentPlayer, GameStatistics);
                 }
-                {
-
-                }
+                Start();
                 break;
         }
 
@@ -294,19 +295,20 @@ class Fight
     {
         if (monster.CurrentHealth < 0)
         {
+            Console.WriteLine($"You've killed {monster.Name}");
             //Remove from monster list
-
-
+            MonsterList.Monsters.Remove(monster);
             //WinCounter++
             stats.FightsWon++;
         }
     }
 
-    public void Lose(Hero hero)
+    public void Lose(Hero hero, Statistics stats)
     {
         if (hero.CurrentHealth < 0)
         {
             //LoseCounter++
+            stats.FightsLost++;
         }
     }
 }
