@@ -13,7 +13,7 @@ class Hero
     public Weapon EquippedWeapon { get; set; } = new Weapon("Bare Hands", 1);
     public Armor EquippedArmor { get; set; } = new Armor("Shirt", 1);
 
-    // Constructor for Hero that will read the user Name
+    // Constructor for Hero that will read the user Name when the game is started.
     public Hero()
     {
         Console.WriteLine("----------------------------------");
@@ -100,7 +100,7 @@ class Monster
     public int Defense { get; set; }
     public int OriginalHealth { get; set; } = 100;
     public int CurrentHealth { get; set; } = 100;
-    
+
     //Constructor Overload Monster with name, strength, defense.
     public Monster(string name, int strength, int defense)
     {
@@ -213,11 +213,21 @@ class Inventory
         Console.WriteLine("Choose a Weapon from 0-4");
         Console.WriteLine("----------------------------------");
         int weaponNum = Int32.Parse(Console.ReadLine());
+        while(weaponNum < 0 || weaponNum > 4)
+        {
+            Console.WriteLine("Please select a weapon from 0 to 4");
+            weaponNum = Int32.Parse(Console.ReadLine());
+        }
         Console.WriteLine($"Weapon {Weapons.ElementAt(weaponNum).Name} equipped!");
         Console.WriteLine("----------------------------------");
         Console.WriteLine("Choose an Armor from 0-4");
         Console.WriteLine("----------------------------------");
         int armorNum = Int32.Parse(Console.ReadLine());
+        while (armorNum < 0 || armorNum > 4)
+        {
+            Console.WriteLine("Please select a armor from 0 to 4");
+            armorNum = Int32.Parse(Console.ReadLine());
+        }
         Console.WriteLine($"Armor {Armors.ElementAt(armorNum).Name} equipped");
         Console.WriteLine("----------------------------------");
 
@@ -476,6 +486,7 @@ class Game
     public Store GameStore = new Store();
     public Hero CurrentPlayer = new Hero();
 
+
     /* Start method is the brain of the application that will determine the movement of Hero.
      * Upon starting it will call the Main Menu for user selection of either Statistics, Inventory, Fight or Store.
      * Selection of Statistics will call the method to display the stats of the game.
@@ -510,9 +521,14 @@ class Game
                 GameInventory.ShowInventory();
                 //change equipment
                 Console.WriteLine("Do you want to change your equipment? Y/N");
-                char doEquipmentChange = char.Parse(Console.ReadLine());
+                string doEquipmentChange = Console.ReadLine();
                 Console.WriteLine("----------------------------------");
-                if (doEquipmentChange == 'Y')
+                while (doEquipmentChange != "Y" && doEquipmentChange != "N")
+                {
+                    Console.WriteLine("Choose 'Y' for yes or 'N' for no");
+                    doEquipmentChange = Console.ReadLine();
+                }
+                if (doEquipmentChange == "Y")
                 {
                     GameInventory.ChangeEquipment(CurrentPlayer);
                 }
