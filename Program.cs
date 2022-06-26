@@ -15,8 +15,11 @@ class Hero
 
     public Hero()
     {
+        Console.WriteLine("----------------------------------");
         Console.WriteLine("Welcome to Final Fantasy");
+        Console.WriteLine("----------------------------------");
         Console.WriteLine("Enter your name:");
+        Console.WriteLine("----------------------------------");
         Name = Console.ReadLine();
         Console.Clear();
     }
@@ -37,10 +40,10 @@ class Hero
         Armor playerArmor = EquippedArmor;
         Console.WriteLine("----------------------------------");
         Console.WriteLine("Your Inventory");
-        Console.WriteLine($"Your Weapon is {(playerWeapon == null ? "Empty": playerWeapon.Name)}");
+        Console.WriteLine($"Your Weapon is {(playerWeapon == null ? "Empty" : playerWeapon.Name)}");
         Console.WriteLine($"Your Armor is {(playerArmor == null ? "Empty" : playerArmor.Name)}");
         Console.WriteLine($"Coin pouch: {Coins}");
-        Console.WriteLine("----------------------------------");
+
     }
 
     public Weapon EquipWeapon(Weapon weapon)
@@ -92,12 +95,21 @@ class Monster
 }
 static class MonsterList
 {
-    public static Monster Bahamuts = new Monster("Bahamuts", 40, 10);
-    public static Monster Zeromus = new Monster("Zeromus", 30, 8);
-    public static Monster Emperor = new Monster("Emperor", 50, 6);
-    public static Monster Necron = new Monster("Necron", 20, 4);
-    public static Monster Shuyin = new Monster("Shuyin", 10, 2);
-    public static List<Monster> Monsters = new List<Monster>() { Bahamuts, Shuyin, Zeromus, Emperor, Necron };
+    public static List<Monster> PopulateMonster()
+    {
+        List<Monster> monsters = new List<Monster>();
+        Monster Bahamuts = new Monster("Bahamuts", 40, 10);
+        Monster Zeromus = new Monster("Zeromus", 30, 8);
+        Monster Emperor = new Monster("Emperor", 50, 6);
+        Monster Necron = new Monster("Necron", 20, 4);
+        Monster Shuyin = new Monster("Shuyin", 10, 2);
+        monsters.Add(Bahamuts);
+        monsters.Add(Zeromus);
+        monsters.Add(Emperor);
+        monsters.Add(Necron);
+        monsters.Add(Shuyin);
+        return monsters;
+    }
 }
 static class WeaponList
 {
@@ -107,7 +119,6 @@ static class WeaponList
     public static Weapon MorningStar = new Weapon("Morningstar", 8);
     public static Weapon QuarterStaff = new Weapon("Quarter Staff", 6);
     public static List<Weapon> Weapons = new List<Weapon>() { Dagger, Lance, Crossbow, MorningStar, QuarterStaff };
-
 }
 
 static class ArmorList
@@ -159,11 +170,15 @@ class Inventory
     public void ChangeEquipment(Hero hero)
     {
         Console.WriteLine("Choose a Weapon from 0-4");
+        Console.WriteLine("----------------------------------");
         int weaponNum = Int32.Parse(Console.ReadLine());
         Console.WriteLine($"Weapon {Weapons.ElementAt(weaponNum).Name} equipped!");
+        Console.WriteLine("----------------------------------");
         Console.WriteLine("Choose an Armor from 0-4");
+        Console.WriteLine("----------------------------------");
         int armorNum = Int32.Parse(Console.ReadLine());
         Console.WriteLine($"Armor {Armors.ElementAt(armorNum).Name} equipped");
+        Console.WriteLine("----------------------------------");
 
         hero.EquipWeapon(Weapons.ElementAt(weaponNum));
         hero.EquipArmor(Armors.ElementAt(armorNum));
@@ -180,11 +195,14 @@ static class MainMenu
 {
     public static void ShowMenu()
     {
+        Console.WriteLine("----------------------------------");
         Console.WriteLine("Main Menu");
+        Console.WriteLine("----------------------------------");
         Console.WriteLine("[A] Statistics");
         Console.WriteLine("[B] Inventory");
         Console.WriteLine("[C] Fight");
         Console.WriteLine("[D] Store");
+        Console.WriteLine("----------------------------------");
     }
 
     public static char SelectMenu()
@@ -205,10 +223,9 @@ class Game
 {
     public Statistics GameStatistics = new Statistics();
     public Inventory GameInventory = new Inventory();
-    public List<Monster> GameMonsters = MonsterList.Monsters;
+    public static List<Monster> GameMonsters = MonsterList.PopulateMonster();
     public Store GameStore = new Store();
     public Hero CurrentPlayer = new Hero();
-    public int TurnCounter { get; set; } = 1;
 
     public void Start()
     {
@@ -217,7 +234,12 @@ class Game
         switch (userSelection)
         {
             case 'A':
-                Console.WriteLine($"Game Statistics: Fights Played:{GameStatistics.GamesPlayed} Fights Won: {GameStatistics.FightsWon} Fights Loss: {GameStatistics.FightsLost}");
+                Console.WriteLine("----------------------------------");
+                Console.WriteLine($"Game Statistics:");
+                Console.WriteLine($"Fights Played:{GameStatistics.GamesPlayed}");
+                Console.WriteLine($"Fights Won: {GameStatistics.FightsWon}");
+                Console.WriteLine($"Fights Loss: {GameStatistics.FightsLost}");
+                Console.WriteLine("----------------------------------");
                 CurrentPlayer.ShowStats();
                 CurrentPlayer.ShowInventory();
                 Start();
@@ -226,10 +248,9 @@ class Game
             case 'B':
                 //display Game Inventory
                 //Inventory class
+                Console.WriteLine("----------------------------------");
                 Console.WriteLine("Displaying Inventory...");
                 GameInventory.ShowInventory();
-                CurrentPlayer.ShowStats();
-                CurrentPlayer.ShowInventory();
                 //change equipment
                 Console.WriteLine("Do you want to change your equipment? Y/N");
                 char doEquipmentChange = char.Parse(Console.ReadLine());
@@ -248,17 +269,16 @@ class Game
                 Console.WriteLine("Monster Encountered!");
                 GameStatistics.GamesPlayed++;
                 Console.WriteLine($"{randomMonster.Name} || Health: {randomMonster.CurrentHealth}/{randomMonster.OriginalHealth} || Strength: {randomMonster.Strength} || Defense: {randomMonster.Defense}");
-                while(CurrentPlayer.CurrentHealth > 0 && randomMonster.CurrentHealth > 0)
+                while (CurrentPlayer.CurrentHealth > 0 && randomMonster.CurrentHealth > 0)
                 {
                     Console.WriteLine("----------------------------------");
-                    Console.WriteLine($"Turn {TurnCounter++}");
                     fight.HeroTurn(CurrentPlayer, randomMonster);
                     fight.MonsterTurn(CurrentPlayer, randomMonster);
-                    Console.WriteLine($"{randomMonster.Name} || Health: {randomMonster.CurrentHealth}/{randomMonster.OriginalHealth}");
-                    Console.WriteLine($"Hero: {CurrentPlayer.Name} || Health: {CurrentPlayer.CurrentHealth}/{CurrentPlayer.OriginalHealth}");
+                    Console.WriteLine($"{randomMonster.Name} || Health: {(randomMonster.CurrentHealth < 0 ? 0 : randomMonster.CurrentHealth)}/{randomMonster.OriginalHealth}");
+                    Console.WriteLine($"Hero: {CurrentPlayer.Name} || Health: {(CurrentPlayer.CurrentHealth < 0 ? 0 : CurrentPlayer.CurrentHealth)}/{CurrentPlayer.OriginalHealth}");
                     fight.Win(randomMonster, GameStatistics, GameMonsters);
-                    fight.Lose(CurrentPlayer, GameStatistics, GameMonsters);
-                    if(CurrentPlayer.CurrentHealth < 0)
+                    fight.Lose(CurrentPlayer, GameStatistics);
+                    if (CurrentPlayer.CurrentHealth < 0)
                     {
                         CurrentPlayer.CurrentHealth = CurrentPlayer.OriginalHealth;
                         break;
@@ -270,10 +290,13 @@ class Game
                 //Store class
                 GameStore.ShowStoreOptions(CurrentPlayer);
                 //check if it has coins
-                if(CurrentPlayer.Coins <= 0)
+                if (CurrentPlayer.Coins <= 0)
                 {
+                    Console.WriteLine("----------------------------------");
                     Console.WriteLine("You don't have enough coins");
-                } else
+                    Console.WriteLine("----------------------------------");
+                }
+                else
                 {
                     //initialize store
                     char storeSelection = GameStore.StoreSelect();
@@ -292,9 +315,7 @@ class Game
                 }
                 Start();
                 break;
-
         }
-
     }
 }
 
@@ -307,46 +328,64 @@ class Fight
         Hero = hero;
         Monster = monster;
     }
+    public int FightCounter { get; set; } = 1;
+    public int NewGameStrength { get; set; } = 10;
 
     public void HeroTurn(Hero hero, Monster monster)
     {
         //try catch here
         int heroDamage = hero.BaseStrength + hero.EquippedWeapon.Power;
         monster.CurrentHealth -= heroDamage;
-        Console.WriteLine($"Hero Damage: {heroDamage}");
+        Console.WriteLine($"Fight Turn {FightCounter++}");
+        Console.WriteLine($"Hero turn attack Damage: {heroDamage}");
     }
 
     public void MonsterTurn(Hero hero, Monster monster)
     {
         //try catch here
         int monsterDamage = monster.Strength - (hero.BaseDefense + hero.EquippedArmor.Power);
-        if(monsterDamage < 0)
+        if (monsterDamage < 0)
         {
+            Console.WriteLine($"Monster turn attack damage: {(monsterDamage < 0 ? 0 : monsterDamage)}");
             Console.WriteLine("No Damage! You have a strong armor");
-        } else
+        }
+        else
         {
+            Console.WriteLine($"Monster turn attack damage: {(monsterDamage < 0 ? 0 : monsterDamage)}");
             hero.CurrentHealth -= monsterDamage;
         }
-        Console.WriteLine($"Monster Damage: {monsterDamage}");
     }
 
     public void Win(Monster monster, Statistics stats, List<Monster> monsters)
     {
         if (monster.CurrentHealth < 0)
         {
-            Console.WriteLine($"You've killed {monster.Name}");
+            Console.WriteLine("----------------------------------");
+            Console.WriteLine($"You've killed {monster.Name} and earned 10 coins");
             //Remove from monster list
             monsters.Remove(monster);
-            Console.WriteLine("You've earned 10 Coins!");
             Console.WriteLine("----------------------------------");
             Console.WriteLine($"Total Coins in pouch: {Hero.Coins += 10}");
             Console.WriteLine("----------------------------------");
             //WinCounter++
             stats.FightsWon++;
+            //NEW GAME PLUS
+            if (monsters.Count == 0)
+            {
+                Console.WriteLine("You've Defeated ALL of the monster. Now the Real Challenge begin.");
+                Console.WriteLine("New Game Plus Initiated!");
+                Console.WriteLine("Stronger Monsters will appear");
+                Game.GameMonsters = MonsterList.PopulateMonster();
+                NewGameStrength += 20;
+                foreach (Monster m in Game.GameMonsters)
+                {
+                    m.Strength += NewGameStrength;
+                }
+            }
         }
     }
 
-    public void Lose(Hero hero, Statistics stats, List<Monster> monsters)
+    public void Lose(Hero hero, Statistics stats)
     {
         if (hero.CurrentHealth < 0)
         {
@@ -355,9 +394,10 @@ class Fight
             Console.WriteLine("----------------------------------");
             Console.WriteLine("All monsters came back from the dead");
             Console.WriteLine("----------------------------------");
-            monsters = MonsterList.Monsters;
+            Game.GameMonsters = MonsterList.PopulateMonster();
             //LoseCounter++
             stats.FightsLost++;
+            hero.CurrentHealth = hero.OriginalHealth;
         }
     }
 }
@@ -369,14 +409,18 @@ class Store
     {
         Console.Clear();
         Console.WriteLine($"Available Coins: {hero.Coins}");
+        Console.WriteLine("----------------------------------");
         Console.WriteLine("Store Option");
-        Console.WriteLine("[A] IncreaseBaseStrength by 5 for 10 Coins");
-        Console.WriteLine("[B] IncreaseBaseDefense by 5 for 10 Coins");
+        Console.WriteLine("----------------------------------");
+        Console.WriteLine("[A] Increase Base Strength by 5 for 10 Coins");
+        Console.WriteLine("[B] Increase Base Defense by 5 for 10 Coins");
         Console.WriteLine("[C] Restore Health by 50 for 20 Coins ");
+        Console.WriteLine("----------------------------------");
     }
 
     public char StoreSelect()
     {
+        Console.WriteLine($"Choose what to purchase");
         char selectedMenu = char.Parse(Console.ReadLine());
         while (selectedMenu != 'A' && selectedMenu != 'B' && selectedMenu != 'C')
         {
@@ -389,14 +433,16 @@ class Store
 
     public void IncreaseBaseStrength(Hero hero)
     {
-        if(hero.Coins > 5)
+        if (hero.Coins > 5)
         {
             hero.BaseStrength += 5;
             hero.Coins -= 10;
-        } else
+        }
+        else
         {
             Console.WriteLine("Not enough coins for Increasing your Strength");
         }
+        Console.WriteLine($"Your base strength is now {hero.BaseStrength}");
     }
 
     public void IncreaseBaseDefense(Hero hero)
@@ -410,28 +456,30 @@ class Store
         {
             Console.WriteLine("Not enough coins for Increasing your Defense");
         }
+        Console.WriteLine($"Your base defense is now {hero.BaseDefense}");
     }
 
     public void RestoreHealth(Hero hero)
     {
-        if(hero.CurrentHealth == hero.OriginalHealth)
+        if (hero.CurrentHealth == hero.OriginalHealth)
         {
             Console.WriteLine("You're already at full health");
             Console.WriteLine("Take your coins back!");
         }
-        if(hero.CurrentHealth < hero.OriginalHealth)
+        if (hero.CurrentHealth < hero.OriginalHealth)
         {
             int healthPoints = hero.CurrentHealth + 50;
             if (healthPoints > 100)
             {
                 hero.CurrentHealth = hero.OriginalHealth;
                 hero.Coins -= 20;
-            } else
+            }
+            else
             {
                 hero.CurrentHealth = healthPoints;
             }
-            
-        }
 
+        }
+        Console.WriteLine($"Your current health is now restored to {hero.CurrentHealth}");
     }
 }
