@@ -210,10 +210,11 @@ class Inventory
      */
     public void ChangeEquipment(Hero hero)
     {
+        // Try Catch
         Console.WriteLine("Choose a Weapon from 0-4");
         Console.WriteLine("----------------------------------");
         int weaponNum = Int32.Parse(Console.ReadLine());
-        while(weaponNum < 0 || weaponNum > 4)
+        while (weaponNum < 0 || weaponNum > 4)
         {
             Console.WriteLine("Please select a weapon from 0 to 4");
             weaponNum = Int32.Parse(Console.ReadLine());
@@ -417,7 +418,7 @@ class Store
      */
     public void IncreaseBaseStrength(Hero hero)
     {
-        if (hero.Coins > 10)
+        if (hero.Coins >= 10)
         {
             hero.BaseStrength += 5;
             hero.Coins -= 10;
@@ -434,7 +435,7 @@ class Store
      */
     public void IncreaseBaseDefense(Hero hero)
     {
-        if (hero.Coins > 10)
+        if (hero.Coins >= 10)
         {
             hero.BaseDefense += 5;
             hero.Coins -= 10;
@@ -452,26 +453,32 @@ class Store
      */
     public void RestoreHealth(Hero hero)
     {
-        if (hero.CurrentHealth == hero.OriginalHealth)
+        if (hero.Coins >= 20)
         {
-            Console.WriteLine("You're already at full health");
-            Console.WriteLine("Take your coins back!");
-        }
-        if (hero.CurrentHealth < hero.OriginalHealth)
+            if (hero.CurrentHealth == hero.OriginalHealth)
+            {
+                Console.WriteLine("You're already at full health");
+                Console.WriteLine("Take your coins back!");
+            }
+            if (hero.CurrentHealth < hero.OriginalHealth)
+            {
+                int healthPoints = hero.CurrentHealth + 50;
+                if (healthPoints > 100)
+                {
+                    hero.CurrentHealth = hero.OriginalHealth;
+                    hero.Coins -= 20;
+                }
+                else
+                {
+                    hero.CurrentHealth = healthPoints;
+                    hero.Coins -= 20;
+                }
+                Console.WriteLine($"Your current health is now restored to {hero.CurrentHealth}");
+            }
+        } else
         {
-            int healthPoints = hero.CurrentHealth + 50;
-            if (healthPoints > 100)
-            {
-                hero.CurrentHealth = hero.OriginalHealth;
-                hero.Coins -= 20;
-            }
-            else
-            {
-                hero.CurrentHealth = healthPoints;
-            }
-
+            Console.WriteLine("Not enough coins to restore health");
         }
-        Console.WriteLine($"Your current health is now restored to {hero.CurrentHealth}");
     }
 }
 
@@ -551,9 +558,9 @@ class Game
                     fight.MonsterTurn(CurrentPlayer, randomMonster);
                     Console.WriteLine($"{randomMonster.Name} || Health: {(randomMonster.CurrentHealth < 0 ? 0 : randomMonster.CurrentHealth)}/{randomMonster.OriginalHealth}");
                     Console.WriteLine($"Hero: {CurrentPlayer.Name} || Health: {(CurrentPlayer.CurrentHealth < 0 ? 0 : CurrentPlayer.CurrentHealth)}/{CurrentPlayer.OriginalHealth}");
-                    fight.Win(randomMonster, GameStatistics, GameMonsters);
-                    fight.Lose(CurrentPlayer, GameStatistics);
                 }
+                fight.Win(randomMonster, GameStatistics, GameMonsters);
+                fight.Lose(CurrentPlayer, GameStatistics);
                 Start();
                 break;
             case 'D':
