@@ -13,6 +13,7 @@ class Hero
     public Weapon EquippedWeapon { get; set; } = new Weapon("Bare Hands", 1);
     public Armor EquippedArmor { get; set; } = new Armor("Shirt", 1);
 
+    // Constructor for Hero that will read the user Name
     public Hero()
     {
         Console.WriteLine("----------------------------------");
@@ -24,6 +25,10 @@ class Hero
         Console.Clear();
     }
 
+    /* Method to display the Hero statistics. 
+     * This method is called in Game > Main Menu > Game Statistics.
+     * Also will be called when the user change equipment in Inventory
+     */
     public void ShowStats()
     {
         Console.WriteLine($"Your Stats");
@@ -34,18 +39,26 @@ class Hero
         Console.WriteLine($"Player Health: {CurrentHealth}/{OriginalHealth}");
     }
 
+    /* Method to display the Hero Inventory. 
+     * This method is called in Game > Main Menu > Game Statistics.
+     * Also will be called when the user change equipment in Inventory
+     */
     public void ShowInventory()
     {
         Weapon playerWeapon = EquippedWeapon;
         Armor playerArmor = EquippedArmor;
         Console.WriteLine("----------------------------------");
         Console.WriteLine("Your Inventory");
+        Console.WriteLine("----------------------------------");
         Console.WriteLine($"Your Weapon is {(playerWeapon == null ? "Empty" : playerWeapon.Name)}");
         Console.WriteLine($"Your Armor is {(playerArmor == null ? "Empty" : playerArmor.Name)}");
         Console.WriteLine($"Coin pouch: {Coins}");
 
     }
-
+    /*
+     * Method to change Hero Equipped Weapon and Armor. Passing Weapon and Armor as Parameter then assign to Hero EquippedWeapon/EquippedArmor.
+     * This method is called in Inventory > Change Equipment.
+     */
     public Weapon EquipWeapon(Weapon weapon)
     {
         return EquippedWeapon = weapon;
@@ -61,6 +74,7 @@ class Weapon
     public string Name { get; set; }
     public int Power { get; set; }
 
+    // Constructor Overload Weapon with name and power.
     public Weapon(string name, int power)
     {
         Name = name;
@@ -72,6 +86,7 @@ class Armor
     public string Name { get; set; }
     public int Power { get; set; }
 
+    //Constructor Overload Armor with name and power.
     public Armor(string name, int power)
     {
         Name = name;
@@ -85,7 +100,8 @@ class Monster
     public int Defense { get; set; }
     public int OriginalHealth { get; set; } = 100;
     public int CurrentHealth { get; set; } = 100;
-
+    
+    //Constructor Overload Monster with name, strength, defense.
     public Monster(string name, int strength, int defense)
     {
         Name = name;
@@ -93,6 +109,12 @@ class Monster
         Defense = defense;
     }
 }
+
+/* New Static MonsterList.
+ * This will Populate the list of all monsters in Game.
+ * A static method that will return a new intances of Monster.
+ * Static method is called when the Game is initialized, Hero Losses and when Hero defeated all original monster.
+ */
 static class MonsterList
 {
     public static List<Monster> PopulateMonster()
@@ -111,6 +133,11 @@ static class MonsterList
         return monsters;
     }
 }
+
+/*
+ * Static Weapon List that will store a new instances of Weapon and add it on a static list called Weapons.
+ * This static List of Weapons is called when the Game is initialized and when displaying the inventory. Also for selecting new Weapon in Inventory.
+ */
 static class WeaponList
 {
     public static Weapon Dagger = new Weapon("Dagger", 4);
@@ -120,7 +147,10 @@ static class WeaponList
     public static Weapon QuarterStaff = new Weapon("Quarter Staff", 6);
     public static List<Weapon> Weapons = new List<Weapon>() { Dagger, Lance, Crossbow, MorningStar, QuarterStaff };
 }
-
+/*
+ * Static Armor List that will store a new instances of Armor and add it on a static list called Armors.
+ * This static List of Armors is called when the Game is initialized and when displaying the inventory. Also for selecting new Armor in Inventory.
+ */
 static class ArmorList
 {
     public static Armor Padded = new Armor("Padded", 11);
@@ -131,12 +161,15 @@ static class ArmorList
     public static List<Armor> Armors = new List<Armor>() { Padded, ScaleMail, ChainMail, HalfPlate, Plate };
 }
 
+// Game Statistics for storing the GamesPlayer, FightsWon, FightsLost.
 class Statistics
 {
     public int GamesPlayed { get; set; } = 0;
     public int FightsWon { get; set; } = 0;
     public int FightsLost { get; set; } = 0;
 }
+
+// Inventory will be instantiated when the user initialized the Game.
 class Inventory
 {
     public ICollection<Weapon> Weapons { get; set; }
@@ -148,6 +181,10 @@ class Inventory
         Armors = ArmorList.Armors;
     }
 
+    /*
+     * Inventory Method that will display the Inventory of the game. This method is called when the Hero access Inventory in Game.
+     * Calling both static Weapon and Armor list and iterating over them to be displayed in the console.
+     */
     public void ShowInventory()
     {
         int weaponCounter = 0;
@@ -167,6 +204,10 @@ class Inventory
         Console.WriteLine("----------------------------------");
     }
 
+    /* Inventory Method that will ask user to change equipment and find it in the local variable Weapons/Armors list.
+     * Previously mentioned method in Hero, EquippedWeapon and EquippedArmor is called here to pass the user selection of a new Weapon and Armor.
+     * Hero Stats and Hero Inventory is also called for showing the changes for Hero.
+     */
     public void ChangeEquipment(Hero hero)
     {
         Console.WriteLine("Choose a Weapon from 0-4");
@@ -191,8 +232,10 @@ class Inventory
     }
 }
 
+// Static MainMenu is called in the Game whenever Hero started Game, After accessing Statistics, Inventory, ChangeEquipment, After fights, and Store.
 static class MainMenu
 {
+    //Static method to display Menu in Console.
     public static void ShowMenu()
     {
         Console.WriteLine("----------------------------------");
@@ -205,6 +248,10 @@ static class MainMenu
         Console.WriteLine("----------------------------------");
     }
 
+    /* Static method that will be called everytime Main Menu is called.
+     * This method will ask user for Main Menu selection and checks if it's in the correct range A-D.
+     * It will return a char for user selection that will be determined in Game > Start > Switch.
+     */
     public static char SelectMenu()
     {
         char selectedMenu = char.Parse(Console.ReadLine());
@@ -218,107 +265,10 @@ static class MainMenu
     }
 
 }
-
-class Game
-{
-    public Statistics GameStatistics = new Statistics();
-    public Inventory GameInventory = new Inventory();
-    public static List<Monster> GameMonsters = MonsterList.PopulateMonster();
-    public Store GameStore = new Store();
-    public Hero CurrentPlayer = new Hero();
-
-    public void Start()
-    {
-        MainMenu.ShowMenu();
-        char userSelection = MainMenu.SelectMenu();
-        switch (userSelection)
-        {
-            case 'A':
-                Console.WriteLine("----------------------------------");
-                Console.WriteLine($"Game Statistics:");
-                Console.WriteLine($"Fights Played:{GameStatistics.GamesPlayed}");
-                Console.WriteLine($"Fights Won: {GameStatistics.FightsWon}");
-                Console.WriteLine($"Fights Loss: {GameStatistics.FightsLost}");
-                Console.WriteLine("----------------------------------");
-                CurrentPlayer.ShowStats();
-                CurrentPlayer.ShowInventory();
-                Start();
-                break;
-
-            case 'B':
-                //display Game Inventory
-                //Inventory class
-                Console.WriteLine("----------------------------------");
-                Console.WriteLine("Displaying Inventory...");
-                GameInventory.ShowInventory();
-                //change equipment
-                Console.WriteLine("Do you want to change your equipment? Y/N");
-                char doEquipmentChange = char.Parse(Console.ReadLine());
-                Console.WriteLine("----------------------------------");
-                if (doEquipmentChange == 'Y')
-                {
-                    GameInventory.ChangeEquipment(CurrentPlayer);
-                }
-                Start();
-                break;
-            case 'C':
-                //Fight class
-                Random randomNum = new Random();
-                Monster randomMonster = GameMonsters.ElementAt(randomNum.Next(GameMonsters.Count));
-                Fight fight = new Fight(CurrentPlayer, randomMonster);
-                Console.WriteLine("Monster Encountered!");
-                GameStatistics.GamesPlayed++;
-                Console.WriteLine($"{randomMonster.Name} || Health: {randomMonster.CurrentHealth}/{randomMonster.OriginalHealth} || Strength: {randomMonster.Strength} || Defense: {randomMonster.Defense}");
-                while (CurrentPlayer.CurrentHealth > 0 && randomMonster.CurrentHealth > 0)
-                {
-                    Console.WriteLine("----------------------------------");
-                    fight.HeroTurn(CurrentPlayer, randomMonster);
-                    fight.MonsterTurn(CurrentPlayer, randomMonster);
-                    Console.WriteLine($"{randomMonster.Name} || Health: {(randomMonster.CurrentHealth < 0 ? 0 : randomMonster.CurrentHealth)}/{randomMonster.OriginalHealth}");
-                    Console.WriteLine($"Hero: {CurrentPlayer.Name} || Health: {(CurrentPlayer.CurrentHealth < 0 ? 0 : CurrentPlayer.CurrentHealth)}/{CurrentPlayer.OriginalHealth}");
-                    fight.Win(randomMonster, GameStatistics, GameMonsters);
-                    fight.Lose(CurrentPlayer, GameStatistics);
-                    if (CurrentPlayer.CurrentHealth < 0)
-                    {
-                        CurrentPlayer.CurrentHealth = CurrentPlayer.OriginalHealth;
-                        break;
-                    }
-                }
-                Start();
-                break;
-            case 'D':
-                //Store class
-                GameStore.ShowStoreOptions(CurrentPlayer);
-                //check if it has coins
-                if (CurrentPlayer.Coins <= 0)
-                {
-                    Console.WriteLine("----------------------------------");
-                    Console.WriteLine("You don't have enough coins");
-                    Console.WriteLine("----------------------------------");
-                }
-                else
-                {
-                    //initialize store
-                    char storeSelection = GameStore.StoreSelect();
-                    switch (storeSelection)
-                    {
-                        case 'A':
-                            GameStore.IncreaseBaseStrength(CurrentPlayer);
-                            break;
-                        case 'B':
-                            GameStore.IncreaseBaseDefense(CurrentPlayer);
-                            break;
-                        case 'C':
-                            GameStore.RestoreHealth(CurrentPlayer);
-                            break;
-                    }
-                }
-                Start();
-                break;
-        }
-    }
-}
-
+/*
+ * Fight updates the instances of Hero and Monster decreasing each health base on properties of Hero and Monster.
+ * Fight is called when Game is started > Main Menu > Fight.
+ */
 class Fight
 {
     public Hero Hero { get; set; }
@@ -331,6 +281,9 @@ class Fight
     public int FightCounter { get; set; } = 1;
     public int NewGameStrength { get; set; } = 10;
 
+    /* Hero Turn method will take hero and monster as parameter calculating the damage to be done by the Hero to the monster.
+     * This method will be called whenever the fight is selected from Main menu.
+     */
     public void HeroTurn(Hero hero, Monster monster)
     {
         //try catch here
@@ -340,6 +293,9 @@ class Fight
         Console.WriteLine($"Hero turn attack Damage: {heroDamage}");
     }
 
+    /* Monster Turn method will take both hero and monster as parameter to calculate the monster damage with hero properties.
+     * This method will be called whenever the fight is selected from Main menu and after the Hero Turn method is called.
+     */
     public void MonsterTurn(Hero hero, Monster monster)
     {
         //try catch here
@@ -356,6 +312,11 @@ class Fight
         }
     }
 
+    /* Check Win method that will determine if the monster health is below 0 for the Hero to win, add win counter, add 10 coins for Hero each win. 
+     * Parameters are Monster, Statistics and list of monsters for removing.
+     * This method is called whenever both HeroTurn and MonsterTurn is called.
+     * New Game Plus: If Hero finishes the first instances of Monster, List of Monster will be reinstantiate with modification to their strength(Much Stronger).
+     */
     public void Win(Monster monster, Statistics stats, List<Monster> monsters)
     {
         if (monster.CurrentHealth < 0)
@@ -385,6 +346,10 @@ class Fight
         }
     }
 
+    /* Check Lose method that will check if Hero's health is below 0.
+     * This method is called whenever both HeroTurn and MonsterTurn is called.
+     * If Hero loses all of the monsters will be instantiated again and lose couneter + 1.
+     */
     public void Lose(Hero hero, Statistics stats)
     {
         if (hero.CurrentHealth < 0)
@@ -402,9 +367,11 @@ class Fight
     }
 }
 
+/* Bonus: In game store that will allow Hero to update he/she properties.
+ */
 class Store
 {
-
+    // Displaying store options called when user access store in Main Menu.
     public void ShowStoreOptions(Hero hero)
     {
         Console.Clear();
@@ -418,6 +385,10 @@ class Store
         Console.WriteLine("----------------------------------");
     }
 
+    /* Method that will be called everytime Store is called.
+     * This method will ask user for Store selection and checks if it's in the correct range A-C.
+     * It will return a char for user selection that will be determined in Game > Start > Main Menu > Store.
+     */
     public char StoreSelect()
     {
         Console.WriteLine($"Choose what to purchase");
@@ -431,9 +402,12 @@ class Store
         return selectedMenu;
     }
 
+    /* Method to IncreaseBaseStrength of Hero.
+     * This will check if Hero has coins to purchase else display not enough coins.
+     */
     public void IncreaseBaseStrength(Hero hero)
     {
-        if (hero.Coins > 5)
+        if (hero.Coins > 10)
         {
             hero.BaseStrength += 5;
             hero.Coins -= 10;
@@ -445,9 +419,12 @@ class Store
         Console.WriteLine($"Your base strength is now {hero.BaseStrength}");
     }
 
+    /* Method to IncreaseBaseDefenseof Hero.
+     * This will check if Hero has coins to purchase else display not enough coins.
+     */
     public void IncreaseBaseDefense(Hero hero)
     {
-        if (hero.Coins > 5)
+        if (hero.Coins > 10)
         {
             hero.BaseDefense += 5;
             hero.Coins -= 10;
@@ -459,6 +436,10 @@ class Store
         Console.WriteLine($"Your base defense is now {hero.BaseDefense}");
     }
 
+    /* Method to RestoreHealth by 50 of Hero.
+     * This will check if Hero has already maximum health else add 50.
+     * This will alsp check if Hero has coins to purchase else display not enough coins.
+     */
     public void RestoreHealth(Hero hero)
     {
         if (hero.CurrentHealth == hero.OriginalHealth)
@@ -483,3 +464,112 @@ class Store
         Console.WriteLine($"Your current health is now restored to {hero.CurrentHealth}");
     }
 }
+
+/* Application heart and brain.
+ * New Instances of Statistics, Inventory, List of Monsters, Hero and Store upon starting the Game.
+ */
+class Game
+{
+    public Statistics GameStatistics = new Statistics();
+    public Inventory GameInventory = new Inventory();
+    public static List<Monster> GameMonsters = MonsterList.PopulateMonster();
+    public Store GameStore = new Store();
+    public Hero CurrentPlayer = new Hero();
+
+    /* Start method is the brain of the application that will determine the movement of Hero.
+     * Upon starting it will call the Main Menu for user selection of either Statistics, Inventory, Fight or Store.
+     * Selection of Statistics will call the method to display the stats of the game.
+     * Selection of Inventory will call the ShowInventory and ask Hero if he/she wants to change Equipment.
+     * Selection of Fight will Instantiate the Fight method and selects a Random Monster to fight with. This is the Playthrough of the game.
+     * Selection of Store will call the method that will provide a change for the Hero to change its parameters if he/she has coins.
+     */
+    public void Start()
+    {
+        MainMenu.ShowMenu();
+        char userSelection = MainMenu.SelectMenu();
+        switch (userSelection)
+        {
+            case 'A':
+                // Show Game Statistics
+                Console.WriteLine("----------------------------------");
+                Console.WriteLine($"Game Statistics:");
+                Console.WriteLine($"Fights Played:{GameStatistics.GamesPlayed}");
+                Console.WriteLine($"Fights Won: {GameStatistics.FightsWon}");
+                Console.WriteLine($"Fights Loss: {GameStatistics.FightsLost}");
+                Console.WriteLine("----------------------------------");
+                CurrentPlayer.ShowStats();
+                CurrentPlayer.ShowInventory();
+                Start();
+                break;
+
+            case 'B':
+                // Display Game Inventory
+                // Inventory class and Equipment Change.
+                Console.WriteLine("----------------------------------");
+                Console.WriteLine("Displaying Inventory...");
+                GameInventory.ShowInventory();
+                //change equipment
+                Console.WriteLine("Do you want to change your equipment? Y/N");
+                char doEquipmentChange = char.Parse(Console.ReadLine());
+                Console.WriteLine("----------------------------------");
+                if (doEquipmentChange == 'Y')
+                {
+                    GameInventory.ChangeEquipment(CurrentPlayer);
+                }
+                Start();
+                break;
+            case 'C':
+                // Selects Random Monster
+                Random randomNum = new Random();
+                Monster randomMonster = GameMonsters.ElementAt(randomNum.Next(GameMonsters.Count));
+                // new Fight class
+                Fight fight = new Fight(CurrentPlayer, randomMonster);
+                Console.WriteLine("Monster Encountered!");
+                GameStatistics.GamesPlayed++;
+                Console.WriteLine($"{randomMonster.Name} || Health: {randomMonster.CurrentHealth}/{randomMonster.OriginalHealth} || Strength: {randomMonster.Strength} || Defense: {randomMonster.Defense}");
+                // Continuos playthrough of HeroTurn, MonsterTurn, CheckWin and CheckLose.
+                while (CurrentPlayer.CurrentHealth > 0 && randomMonster.CurrentHealth > 0)
+                {
+                    Console.WriteLine("----------------------------------");
+                    fight.HeroTurn(CurrentPlayer, randomMonster);
+                    fight.MonsterTurn(CurrentPlayer, randomMonster);
+                    Console.WriteLine($"{randomMonster.Name} || Health: {(randomMonster.CurrentHealth < 0 ? 0 : randomMonster.CurrentHealth)}/{randomMonster.OriginalHealth}");
+                    Console.WriteLine($"Hero: {CurrentPlayer.Name} || Health: {(CurrentPlayer.CurrentHealth < 0 ? 0 : CurrentPlayer.CurrentHealth)}/{CurrentPlayer.OriginalHealth}");
+                    fight.Win(randomMonster, GameStatistics, GameMonsters);
+                    fight.Lose(CurrentPlayer, GameStatistics);
+                }
+                Start();
+                break;
+            case 'D':
+                // Store class
+                GameStore.ShowStoreOptions(CurrentPlayer);
+                // Check if it has coins
+                if (CurrentPlayer.Coins <= 0)
+                {
+                    Console.WriteLine("----------------------------------");
+                    Console.WriteLine("You don't have enough coins");
+                    Console.WriteLine("----------------------------------");
+                }
+                else
+                {
+                    // Store Selections for the Hero calling A-C switch, Increasing either Strength, Defense or Health.
+                    char storeSelection = GameStore.StoreSelect();
+                    switch (storeSelection)
+                    {
+                        case 'A':
+                            GameStore.IncreaseBaseStrength(CurrentPlayer);
+                            break;
+                        case 'B':
+                            GameStore.IncreaseBaseDefense(CurrentPlayer);
+                            break;
+                        case 'C':
+                            GameStore.RestoreHealth(CurrentPlayer);
+                            break;
+                    }
+                }
+                Start();
+                break;
+        }
+    }
+}
+
