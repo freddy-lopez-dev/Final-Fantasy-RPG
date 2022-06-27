@@ -295,11 +295,11 @@ class Fight
     /* Hero Turn method will take hero and monster as parameter calculating the damage to be done by the Hero to the monster.
      * This method will be called whenever the fight is selected from Main menu.
      */
-    public void HeroTurn(Hero hero, Monster monster)
+    public void HeroTurn()
     {
         //try catch here
-        int heroDamage = hero.BaseStrength + hero.EquippedWeapon.Power;
-        monster.CurrentHealth -= heroDamage;
+        int heroDamage = Hero.BaseStrength + Hero.EquippedWeapon.Power;
+        Monster.CurrentHealth -= heroDamage;
         Console.WriteLine($"Fight Turn {FightCounter++}");
         Console.WriteLine($"Hero turn attack Damage: {heroDamage}");
     }
@@ -307,10 +307,10 @@ class Fight
     /* Monster Turn method will take both hero and monster as parameter to calculate the monster damage with hero properties.
      * This method will be called whenever the fight is selected from Main menu and after the Hero Turn method is called.
      */
-    public void MonsterTurn(Hero hero, Monster monster)
+    public void MonsterTurn()
     {
         //try catch here
-        int monsterDamage = monster.Strength - (hero.BaseDefense + hero.EquippedArmor.Power);
+        int monsterDamage = Monster.Strength - (Hero.BaseDefense + Hero.EquippedArmor.Power);
         if (monsterDamage < 0)
         {
             Console.WriteLine($"Monster turn attack damage: {(monsterDamage < 0 ? 0 : monsterDamage)}");
@@ -319,7 +319,7 @@ class Fight
         else
         {
             Console.WriteLine($"Monster turn attack damage: {(monsterDamage < 0 ? 0 : monsterDamage)}");
-            hero.CurrentHealth -= monsterDamage;
+            Hero.CurrentHealth -= monsterDamage;
         }
     }
 
@@ -328,14 +328,14 @@ class Fight
      * This method is called whenever both HeroTurn and MonsterTurn is called.
      * New Game Plus: If Hero finishes the first instances of Monster, List of Monster will be reinstantiate with modification to their strength(Much Stronger).
      */
-    public void Win(Monster monster, Statistics stats, List<Monster> monsters)
+    public void Win(Statistics stats, List<Monster> monsters)
     {
-        if (monster.CurrentHealth < 0)
+        if (Monster.CurrentHealth < 0)
         {
             Console.WriteLine("----------------------------------");
-            Console.WriteLine($"You've killed {monster.Name} and earned 10 coins");
+            Console.WriteLine($"You've killed {Monster.Name} and earned 10 coins");
             //Remove from monster list
-            monsters.Remove(monster);
+            monsters.Remove(Monster);
             Console.WriteLine("----------------------------------");
             Console.WriteLine($"Total Coins in pouch: {Hero.Coins += 10}");
             Console.WriteLine("----------------------------------");
@@ -361,9 +361,9 @@ class Fight
      * This method is called whenever both HeroTurn and MonsterTurn is called.
      * If Hero loses all of the monsters will be instantiated again and lose couneter + 1.
      */
-    public void Lose(Hero hero, Statistics stats)
+    public void Lose(Statistics stats)
     {
-        if (hero.CurrentHealth < 0)
+        if (Hero.CurrentHealth < 0)
         {
             Console.WriteLine("----------------------------------");
             Console.WriteLine("You've died!");
@@ -373,7 +373,7 @@ class Fight
             Game.GameMonsters = MonsterList.PopulateMonster();
             //LoseCounter++
             stats.FightsLost++;
-            hero.CurrentHealth = hero.OriginalHealth;
+            Hero.CurrentHealth = Hero.OriginalHealth;
         }
     }
 }
@@ -475,7 +475,8 @@ class Store
                 }
                 Console.WriteLine($"Your current health is now restored to {hero.CurrentHealth}");
             }
-        } else
+        }
+        else
         {
             Console.WriteLine("Not enough coins to restore health");
         }
@@ -554,13 +555,13 @@ class Game
                 while (CurrentPlayer.CurrentHealth > 0 && randomMonster.CurrentHealth > 0)
                 {
                     Console.WriteLine("----------------------------------");
-                    fight.HeroTurn(CurrentPlayer, randomMonster);
-                    fight.MonsterTurn(CurrentPlayer, randomMonster);
+                    fight.HeroTurn();
+                    fight.MonsterTurn();
                     Console.WriteLine($"{randomMonster.Name} || Health: {(randomMonster.CurrentHealth < 0 ? 0 : randomMonster.CurrentHealth)}/{randomMonster.OriginalHealth}");
                     Console.WriteLine($"Hero: {CurrentPlayer.Name} || Health: {(CurrentPlayer.CurrentHealth < 0 ? 0 : CurrentPlayer.CurrentHealth)}/{CurrentPlayer.OriginalHealth}");
                 }
-                fight.Win(randomMonster, GameStatistics, GameMonsters);
-                fight.Lose(CurrentPlayer, GameStatistics);
+                fight.Win(GameStatistics, GameMonsters);
+                fight.Lose(GameStatistics);
                 Start();
                 break;
             case 'D':
