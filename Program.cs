@@ -69,30 +69,6 @@ class Hero
     }
 
 }
-class Weapon
-{
-    public string Name { get; set; }
-    public int Power { get; set; }
-
-    // Constructor Overload Weapon with name and power.
-    public Weapon(string name, int power)
-    {
-        Name = name;
-        Power = power;
-    }
-}
-class Armor
-{
-    public string Name { get; set; }
-    public int Power { get; set; }
-
-    //Constructor Overload Armor with name and power.
-    public Armor(string name, int power)
-    {
-        Name = name;
-        Power = power;
-    }
-}
 class Monster
 {
     public string Name { get; set; }
@@ -134,6 +110,19 @@ static class MonsterList
     }
 }
 
+class Weapon
+{
+    public string Name { get; set; }
+    public int Power { get; set; }
+
+    // Constructor Overload Weapon with name and power.
+    public Weapon(string name, int power)
+    {
+        Name = name;
+        Power = power;
+    }
+}
+
 /*
  * Static Weapon List that will store a new instances of Weapon and add it on a static list called Weapons.
  * This static List of Weapons is called when the Game is initialized and when displaying the inventory. Also for selecting new Weapon in Inventory.
@@ -147,6 +136,19 @@ static class WeaponList
     public static Weapon QuarterStaff = new Weapon("Quarter Staff", 6);
     public static List<Weapon> Weapons = new List<Weapon>() { Dagger, Lance, Crossbow, MorningStar, QuarterStaff };
 }
+class Armor
+{
+    public string Name { get; set; }
+    public int Power { get; set; }
+
+    //Constructor Overload Armor with name and power.
+    public Armor(string name, int power)
+    {
+        Name = name;
+        Power = power;
+    }
+}
+
 /*
  * Static Armor List that will store a new instances of Armor and add it on a static list called Armors.
  * This static List of Armors is called when the Game is initialized and when displaying the inventory. Also for selecting new Armor in Inventory.
@@ -290,7 +292,6 @@ class Fight
         Monster = monster;
     }
     public int FightCounter { get; set; } = 1;
-    public int NewGameStrength { get; set; } = 10;
 
     /* Hero Turn method will take hero and monster as parameter calculating the damage to be done by the Hero to the monster.
      * This method will be called whenever the fight is selected from Main menu.
@@ -348,10 +349,10 @@ class Fight
                 Console.WriteLine("New Game Plus Initiated!");
                 Console.WriteLine("Stronger Monsters will appear");
                 Game.GameMonsters = MonsterList.PopulateMonster();
-                NewGameStrength += 20;
                 foreach (Monster m in Game.GameMonsters)
                 {
-                    m.Strength += NewGameStrength;
+                    m.Strength += stats.GamesPlayed;
+                    m.Defense += stats.GamesPlayed;
                 }
             }
         }
@@ -556,12 +557,21 @@ class Game
                 {
                     Console.WriteLine("----------------------------------");
                     fight.HeroTurn();
+                    if (randomMonster.CurrentHealth < 0)
+                    {
+                        break;
+                    }
                     fight.MonsterTurn();
                     Console.WriteLine($"{randomMonster.Name} || Health: {(randomMonster.CurrentHealth < 0 ? 0 : randomMonster.CurrentHealth)}/{randomMonster.OriginalHealth}");
                     Console.WriteLine($"Hero: {CurrentPlayer.Name} || Health: {(CurrentPlayer.CurrentHealth < 0 ? 0 : CurrentPlayer.CurrentHealth)}/{CurrentPlayer.OriginalHealth}");
                 }
-                fight.Win(GameStatistics, GameMonsters);
-                fight.Lose(GameStatistics);
+                if(CurrentPlayer.CurrentHealth > randomMonster.CurrentHealth)
+                {
+                    fight.Win(GameStatistics, GameMonsters);
+                } else
+                {
+                    fight.Lose(GameStatistics);
+                }             
                 Start();
                 break;
             case 'D':
